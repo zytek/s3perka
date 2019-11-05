@@ -10,7 +10,20 @@ import (
 	"os/signal"
 )
 
-func setup() Config {
+type BucketConfig struct {
+	Region  string
+	Bucket  string
+	Prefix  string
+	Profile string
+}
+
+type Config struct {
+	Source      BucketConfig
+	Destination BucketConfig
+	Parallel    int
+}
+
+func readConfig() Config {
 	var config Config
 
 	var configFile string

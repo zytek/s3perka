@@ -8,22 +8,9 @@ import (
 	"log"
 )
 
-type BucketConfig struct {
-	Region  string
-	Bucket  string
-	Prefix  string
-	Profile string
-}
-
-type Config struct {
-	Source      BucketConfig
-	Destination BucketConfig
-	Parallel    int
-}
-
 func main() {
 
-	config := setup()
+	config := readConfig()
 	sessSource := session.Must(session.NewSession(&aws.Config{
 		Region:      aws.String(config.Source.Region),
 		Credentials: credentials.NewSharedCredentials("", config.Source.Profile),
@@ -41,11 +28,14 @@ func main() {
 
 	source := NewBucket(config.Source.Bucket, config.Source.Prefix, sessSource, ctx)
 	dest := NewBucket(config.Destination.Bucket, config.Destination.Prefix, sessDest, ctx)
+
 	j := job{
 		source:      source,
 		destination: dest,
 		copyChan:    make(chan string, config.Parallel),
 	}
+
 	j.Start()
+
 	log.Println("All done")
 }
