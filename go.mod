@@ -1,4 +1,4 @@
-module s3-lopata
+module github.com/zytek/s3perka
 
 require (
 	github.com/aws/aws-sdk-go v1.20.17
