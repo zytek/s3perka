@@ -1,0 +1,10 @@
+source.bucket = "BUCKET_SOURCE"
+source.region = "eu-west-1"
+source.prefix = ""
+source.profile = "sourceProf"
+destination.bucket = "BUCKET_DEST"
+destination.region = "cn-north-1"
+destination.prefix = ""
+destination.profile = "destProf"
+# Default 10, but I recommend using 50-200 especialy when running on EC2
+parallel=50
