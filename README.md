@@ -6,8 +6,8 @@ Use this tool if you need to copy S3 objects to/from AWS China or GovCloud, whic
 are **different AWS partitions** and hence you **cannot** use `aws s3 sync`
 
 * supports massive parallelism (dozens or 100+ simultaneus copies) as this has proven speeding up copying especially to AWS China
-* only copies files from source, that do not exist or whose size on destination differs
-* does not delete files on destination bucket
+* only copies files that do not exist on destination bucket or whose size differs
+* does not delete files on destination bucket (think: `aws s3 sync --delete`, this is unsupported)
 
 # Installation
 
@@ -45,4 +45,4 @@ parallel=50
 
 * `s3perka` downloads files on disk and then uploads them. Currently there is no "on-the-fly" (in-memory) copy mode
   * make sure you have enough disk space for largest file to fit
-  * make sure youd HDD can handle such parallelism level 
+  * make sure youd HDD can handle such parallelism level (this can be tweaked on linux system) 
