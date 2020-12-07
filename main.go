@@ -11,21 +11,33 @@ import (
 func main() {
 
 	config := readConfig()
-	sessSource := session.Must(session.NewSession(&aws.Config{
+	// Initialize source bucket AWS Session
+	sourceConfig := &aws.Config{
 		Region:      aws.String(config.Source.Region),
-		Credentials: credentials.NewSharedCredentials("", config.Source.Profile),
 		MaxRetries:  aws.Int(10),
-	}))
+	}
+	if config.Source.Profile != "" {
+		sourceConfig.Credentials = credentials.NewSharedCredentials("", config.Source.Profile)
+	}
 
-	sessDest := session.Must(session.NewSession(&aws.Config{
+	sessSource := session.Must(session.NewSession(sourceConfig))
+
+    // Initialize destination bucket AWS Session
+	destConfig := &aws.Config{
 		Region:      aws.String(config.Destination.Region),
-		Credentials: credentials.NewSharedCredentials("", config.Destination.Profile),
 		MaxRetries:  aws.Int(10),
-	}))
+	}
 
-	ctx, cancelFunc := context.WithCancel(context.Background())
+	if config.Destination.Profile != "" {
+		destConfig.Credentials = credentials.NewSharedCredentials("", config.Destination.Profile)
+	}
+  	sessDest := session.Must(session.NewSession(destConfig))
+
+	// Setup context and interrupt (ctrl+c) handling
+  	ctx, cancelFunc := context.WithCancel(context.Background())
 	handleInterrupt(cancelFunc)
 
+  	// Initialize main copy job
 	source := NewBucket(config.Source.Bucket, config.Source.Prefix, sessSource, ctx)
 	dest := NewBucket(config.Destination.Bucket, config.Destination.Prefix, sessDest, ctx)
 
