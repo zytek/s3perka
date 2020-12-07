@@ -10,9 +10,18 @@ import (
 	"time"
 )
 
-func gb(size int64) string {
-	s := fmt.Sprintf("%d GB", size/1024/1024/1024)
-	return s
+func bytes(b int64) string {
+    const unit = 1024
+    if b < unit {
+        return fmt.Sprintf("%d B", b)
+    }
+    div, exp := int64(unit), 0
+    for n := b / unit; n >= unit; n /= unit {
+        div *= unit
+        exp++
+    }
+    return fmt.Sprintf("%.1f %ciB",
+        float64(b)/float64(div), "KMGTPE"[exp])
 }
 
 type jobStats struct {
@@ -113,7 +122,7 @@ func (j *job) collectKeys() {
 		if err != nil {
 			log.Fatal("Failed to list source bucket objects: ", err)
 		}
-		log.Println(j.name(), "source: found", j.source.TotalCount, "objects (", gb(j.source.TotalSize), ")")
+		log.Println(j.name(), "source: found", j.source.TotalCount, "objects (", bytes(j.source.TotalSize), ")")
 	}()
 
 	wg.Add(1)
@@ -123,7 +132,7 @@ func (j *job) collectKeys() {
 		if err != nil {
 			log.Fatal("Failed to list destination bucket objects: ", err)
 		}
-		log.Println(j.name(), "destination: found", j.destination.TotalCount, "objects (", gb(j.destination.TotalSize), ")")
+		log.Println(j.name(), "destination: found", j.destination.TotalCount, "objects (", bytes(j.destination.TotalSize), ")")
 	}()
 	wg.Wait()
 }
@@ -133,12 +142,13 @@ func (j *job) name() string {
 }
 
 func (j *job) status() {
-	log.Println(j.name(), "status: copied", j.stats.GetNum(), "objects (", gb(j.stats.GetSize()), ")")
+	log.Println(j.name(), "status update: copied", j.stats.GetNum(), "objects (", bytes(j.stats.GetSize()), ")")
 }
 
 func (j *job) Start() {
 	j.prepare()
-	log.Println(j.name(), "starting, must copy", len(j.copyList), "objects (", gb(j.copyTotalSize), ")")
+	log.Println(j.name(), "starting, must copy", len(j.copyList), "new objects (", bytes(j.copyTotalSize), ")")
+	log.Println(j.name(), "displaying status updates every 1 sec")
 	go func() {
 		for {
 			time.Sleep(time.Second)
