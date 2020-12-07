@@ -30,11 +30,14 @@ cd ~/git
 git clone https://github.com/zytek/s3perka
 cd s3perka
 ```
-2.  Build, using go 1.13+ for module support
+2. Build, using go 1.13+ for module support
 
 ```go build```
 
 This will produce `s3perka` binary.
+
+3. To cross-compile use something like this:
+```GOOS=linux GOARCH=amd64 go build```
 
 # Usage
 
