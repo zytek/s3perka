@@ -79,10 +79,10 @@ func (j *job) copyObject(key string) {
 
 func (j *job) runConsumers(wg *sync.WaitGroup) {
 	for i := 0; i < cap(j.copyChan); i++ {
+		wg.Add(1)
 		go func() {
-			wg.Add(1)
-			for key := range j.copyChan {
-				j.copyObject(key)
+			for k := range j.copyChan {
+				j.copyObject(k)
 			}
 			wg.Done()
 		}()
@@ -96,6 +96,7 @@ func (j *job) copy() {
 	}
 	close(j.copyChan)
 	wg.Wait()
+  j.status()
 }
 
 func (j *job) prepare() {
@@ -148,7 +149,6 @@ func (j *job) status() {
 func (j *job) Start() {
 	j.prepare()
 	log.Println(j.name(), "starting, must copy", len(j.copyList), "new objects (", bytes(j.copyTotalSize), ")")
-	log.Println(j.name(), "displaying status updates every 1 sec")
 	go func() {
 		for {
 			time.Sleep(time.Second)
