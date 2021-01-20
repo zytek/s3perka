@@ -35,8 +35,6 @@ brews:
     tap:
       owner: zytek
       name: homebrew-tools
-      # Optionally a token can be provided, if it differs from the token provided to GoReleaser
-      #token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 
     # Git author used to commit to the repository.
     # Defaults are shown.
