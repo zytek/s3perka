@@ -46,18 +46,16 @@ brews:
     # Default is the root folder.
     folder: Formula
 
-    # Caveats for the user of your binary.
-    # Default is empty.
-    caveats: "You need to configure this software before use (goship configure or check docs)"
-    homepage: "https://github.com/zytek/goship"
-    description: "Utility that helps find, connect  and copy to particular cloud resources using configured providers"
+    caveats: ""
+    homepage: "https://github.com/zytek/s3perka"
+    description: "Copy (sync) S3 objects between different AWS Partitions/Accounts"
     license: "MIT"
     skip_upload: false
 
     dependencies: []
 
     test: |
-      system "#{bin}/goship version"
+      system "#{bin}/s3perka -h"
 
     install: |
-      bin.install "goship"
+      bin.install "s3perka"
